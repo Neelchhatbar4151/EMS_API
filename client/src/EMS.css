@@ -1,0 +1,115 @@
+@keyframes smooth {
+      0% {
+            height: 0px;
+            opacity: 0;
+            background-color: black;
+      }
+
+      100% {
+            height: 305px;
+            opacity: 1;
+            background-color: white;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      }
+}
+
+@keyframes remove {
+      0% {
+            height: 305px;
+            opacity: 1;
+            background-color: white;
+      }
+
+      100% {
+            height: 0px;
+            opacity: 0;
+            background-color: black;
+      }
+}
+
+.cap {
+      text-align: center;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 10px;
+      background-color: rgb(149, 138, 138);
+      color: white;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+}
+
+.opt {
+      text-decoration: none;
+      color: black;
+}
+
+#toggle {
+      transition: background-color 0.5s;
+}
+
+.divopt {
+      margin-top: 10px;
+}
+
+.divopt:hover {
+      background-color: rgb(243, 242, 242);
+      border-radius: 10px;
+
+}
+
+#hideit {
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      width: 330px;
+      background-color: white;
+      display: none;
+      border: 1px solid rgb(74, 74, 74);
+      padding: 5px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.back {
+      background-color: rgb(168, 228, 175);
+}
+
+.SI {
+      background-color: rgb(210, 235, 240);
+}
+
+.hr {
+      border-bottom: 1px solid black;
+      margin-bottom: 40px;
+      margin-top: 20px;
+}
+
+.pvr {
+      border-left: 1px solid black;
+}
+
+.SE {
+      width: 50%;
+      min-width: 40%;
+      padding: 10px;
+      margin-left: 15px;
+      margin-right: 15px;
+      display: inline-block;
+      border-radius: 5px;
+      margin-top: 0px;
+      overflow: auto;
+}
+
+.pta {
+      margin-bottom: 15px;
+}
+
+.TR{
+      background-color: rgb(255, 229, 229);
+}
+
+.BE{
+      background-color: rgb(215, 215, 215);
+}
