@@ -31,6 +31,8 @@ tr:nth-child(even) {
 .upper {
       overflow: auto;
       padding: 15px;
+      transition: opacity 0.3s;
+      min-height: 500px;
 }
 
 /* .record{
@@ -98,10 +100,73 @@ tr:nth-child(even) {
 }
 
 .titleheader {
+      padding-top: 15px;
       margin-top: 5px;
       text-align: center;
+      text-decoration: underline;
 }
 
 .editText {
       width: 25%;
+      display: inline-block;
+      margin-left: 74px;
+      min-width: 230px;
+      margin-bottom: -15px;
+      margin-right: 5px;
+}
+.editdate{
+      margin-left: 75px;
+      max-width: 600px;
+}
+
+.containerHistory{
+      background-color: #f9f8fa;
+}
+.filter{
+      display: none;
+      margin-bottom: -30px;
+}
+
+@keyframes Show {
+      0%{
+            opacity: 0;
+            max-height:30px ;
+      }
+      25%{
+            max-height: 0px;
+      }
+      100%{
+            opacity: 1;
+            max-height: 300px;
+      }
+}
+@keyframes Hide {
+      0%{
+            opacity: 1;
+            max-height: 300px;
+      }
+      100%{
+            opacity: 0;
+            max-height: 30px;
+      }
+}
+
+.PFR{
+      position: relative;
+      left: 49%;
+      margin-top: 30px;
+      transform: translate(-50%, -50%);
+}
+
+.fName{
+      min-width: 300px;
+}
+.mNote{
+      min-width: 300px;
+}
+.evType{
+      min-width: 250px;
+}
+.mDate {
+      min-width: 230px;
 }

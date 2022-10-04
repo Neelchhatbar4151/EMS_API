@@ -23,6 +23,7 @@ p{
       border: none;
       border-radius: 5px;
       padding: 10px 20px;
+      transition: background-color 0.5s;
 }
 .goLogin{
       padding: 10px;
@@ -32,9 +33,10 @@ p{
       border-radius: 5px;
       padding: 10px 20px;
       margin-left: 5px;
+
 }
 
 .goLogin:active, .goHome:active{
       background-color: rgb(87, 80, 80);
+     
 }
-

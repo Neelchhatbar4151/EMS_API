@@ -5,7 +5,7 @@ import { developement } from '../processes/userData';
 import { NavLink } from 'react-router-dom';
 
 function Register() {
-      
+
       const history = useNavigate();
       const [inputValues, setInputValues] = React.useState({
             email: '', password: ''
@@ -19,33 +19,40 @@ function Register() {
       const registerUser = async (e) => {
             e.preventDefault();
             const { email, password } = inputValues;
-
-            const res = await fetch((developement)?"http://localhost:5000/register":"/register", {
-                  method: "POST",
-                  crossDomain: true,
-                  headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                        "Access-Control-Allow-Origin": "*",
-                  },
-                  body: JSON.stringify({
-                        email, password
-                  })
-            })
-            const data = await res.json();
-            if (data.status === 406) {
-                  alert("Fill the fields properly");
+            if (!email || !password) {
+                  document.getElementsByClassName('danger')[0].innerText = "*Fill the fields properly"
             }
-            else if (data.status === 422) {
-                  alert("Email already exist");
-                  history("/Register");
-            }
-            else if (data.status === 201) {
-                  setEmail({email, password, allow:true});
-                  history('/Authorize')
+            else if (!email.includes('@')) {
+                  document.getElementsByClassName('danger')[0].innerText = "*Email field must include a ' @ '"
             }
             else {
-                  alert("Unknown Error");
+                  const res = await fetch((developement) ? "http://localhost:5000/register" : "/register", {
+                        method: "POST",
+                        crossDomain: true,
+                        headers: {
+                              "Content-Type": "application/json",
+                              Accept: "application/json",
+                              "Access-Control-Allow-Origin": "*",
+                        },
+                        body: JSON.stringify({
+                              email, password
+                        })
+                  })
+                  const data = await res.json();
+                  if (data.status === 406) {
+                        document.getElementsByClassName('danger')[0].innerText = "*Fill the fields properly"
+                  }
+                  else if (data.status === 422) {
+                        document.getElementsByClassName('danger')[0].innerText = "*Email already Exist"
+                        history("/Register");
+                  }
+                  else if (data.status === 201) {
+                        setEmail({ email, password, allow: true });
+                        history('/Authorize')
+                  }
+                  else {
+                        alert("Unknown Error");
+                  }
             }
 
       }
@@ -61,7 +68,7 @@ function Register() {
                               <form>
                                     <input type="email" name="email" placeholder='Your email ' onChange={handleOnChange} autoComplete="off" required />
                                     <input type="password" name="password" placeholder='Your password ' onChange={handleOnChange} autoComplete="off" required />
-                                    <button type='submit' className='btn-login' id='do-login' onClick={registerUser}>Sign up</button>
+                                    <button type='submit' className='btn-login' id='do-login' onClick={registerUser}>Sign up</button><span className="danger"></span>
                                     <NavLink to='/login' className='suggestion'>Already have an account?</NavLink>
                               </form>
                         </div>
