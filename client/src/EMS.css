@@ -113,3 +113,30 @@
 .BE{
       background-color: rgb(215, 215, 215);
 }
+.CU {
+      background-color: #fff4e1;
+}
+
+.prompt {
+      background-color: rgb(215, 237, 255);
+      position: absolute;
+      width: 300px;
+      max-width: 90%;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 15px;
+      border-radius: 20px;
+}
+
+.editP{
+      background-color: rgb(255, 255, 255);
+      position: absolute;
+      width: 300px;
+      max-width: 90%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 15px;
+      border-radius: 20px;
+}

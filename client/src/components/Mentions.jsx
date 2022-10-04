@@ -26,9 +26,9 @@ function Mentions() {
 			return (
 				<tr id={n._id} key={n._id}>
 					<td>{n.mfrom} </td>
-					<td className="noteName">{n.mNote}</td>
-					<td>{day[date.getDay()] + ", " + date.getDate() + " " + month[date.getMonth() + 1] + " " + date.getFullYear()}</td>
 					<td>{n.mType} </td>
+					<td>{day[date.getDay()] + ", " + date.getDate() + " " + month[date.getMonth() + 1] + " " + date.getFullYear()}</td>
+					<td className="noteName">{n.mNote}</td>
 				</tr>
 			)
 		}
@@ -38,9 +38,9 @@ function Mentions() {
 					<thead>
 						<tr>
 							<th>From</th>
-							<th>Note</th>
-							<th>Date</th>
 							<th>Event Type</th>
+							<th>Date</th>
+							<th>Note</th>
 						</tr>
 					</thead>
 					<tbody>

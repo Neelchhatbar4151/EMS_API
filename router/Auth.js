@@ -338,4 +338,80 @@ R.post('/BonusToEmployee', BE, (req, res) => {
       res.status(201).json({ status: 201 })
 })
 
+const CE = async( req,res,next) =>{
+      try {
+            const { email, _id, emps, note, eventType, date } = req.body;
+            if (!eventType || !note){
+                  return res.status(406).json({status: 406})
+            }
+            let data = await User.findOne({_id}, {records: 1})
+            for(let i=0;i<emps.length;i++){
+                  await User.findOneAndUpdate({_id}, {records: data.records.concat({rType: eventType, rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note})})
+
+                  let d = await User.findOne({email: emps[i].eEmail}, {mentions: 1})
+
+                  if(d) {
+                        let update = {
+                              mentions: d.mentions.concat({mfrom: email, mDate: date, mType: eventType, mNote: note})
+                        }
+                        await User.findOneAndUpdate({email: emps[i].eEmail}, update)
+                  }
+            }
+            next();
+            
+      } catch (error) {
+            console.log(error)
+            res.status(500).json({status: 500})
+      }
+}
+
+R.post('/CustomEvent', CE, (req,res) =>{ 
+      res.status(201).json({status: 201})
+})
+
+const CT = async (req,res,next) =>{
+      try {
+            const { _id, eType} = req.body;
+            if(!eType) {
+                  return res.status(406).json({status: 406})
+            }
+            let data = await User.findOne({_id}, {employeeTypes: 1})
+            for(let i=0;i<data.employeeTypes.length;i++){
+                  if(data.employeeTypes[i].eType === eType){
+                        return res.status(400).json({status: 400})
+                  }
+            }
+            let update = {
+                  employeeTypes: data.employeeTypes.concat({eType})
+            }
+            await User.findOneAndUpdate({_id}, update)
+            next();
+      } catch (error) {
+            console.log(error)
+            res.status( 500).json({status: 500})
+      }
+}
+
+R.post('/CustomType', CT, (req,res) =>{ 
+      res.status ( 201).json({status: 201})
+})
+
+const CUN = async (req,res,next) => {
+      try {
+            const {_id, name} = req.body;
+            if(!name) {
+                  return res.status(406).json({status: 406})
+            }
+            await User.findOneAndUpdate({_id}, {name})
+            next();
+      } catch (error) {
+            console.log(error)
+            res.status(500).json({status: 500})
+      }
+}
+
+R.post('/ChangeUserName', CUN, (req,res) =>{
+      res.status(201).json({status: 201})
+})
+
 module.exports = R;  //exporting routes
