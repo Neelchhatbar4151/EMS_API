@@ -446,6 +446,7 @@ R.post('/CustomEvent', CE, (req, res) => {
 const CT = async (req, res, next) => {
       try {
             const { _id, eType } = req.body;
+            console.log(_id,eType)
             if (!eType) {
                   return res.status(406).json({ status: 406 })
             }

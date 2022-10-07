@@ -54,7 +54,7 @@ function Ne() {
 						"Access-Control-Allow-Origin": "*",
 					},
 					body: JSON.stringify({
-						_id: loginUser._id, name: document.getElementById('CEN').value  
+						_id: loginUser._id, eType: document.getElementById('CEN').value  
 					})
 				})
 				const data = await res.json();
@@ -107,7 +107,7 @@ function Ne() {
 			else if (!inputValues.email.includes('@')) {
 				alert("Email field must contain a ' @ '")
 			}
-			else if(phone.length !== 10 ){
+			else if(phone.length !== 10 && phone.length >=1 ){
 				alert("Phone number must be 10 digit number")
 			}
 			else {
@@ -126,7 +126,6 @@ function Ne() {
 				})
 
 				const data = await res.json();
-				console.log(data)
 				if (data.status === 406) {
 					alert("Fill the fields properly");
 				}
@@ -145,7 +144,7 @@ function Ne() {
 				else {
 					alert("unknown error");
 				}
-				document.getElementById('main-submit').disabled = true
+				document.getElementById('main-submit').disabled = false
 			}
 		}
 		const d = Moment(inputValues.date).format('yyyy-MM-DD')
