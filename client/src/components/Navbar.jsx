@@ -14,7 +14,7 @@ const Navbar = () => {
       const history = useNavigate();
       function Logout() {
             const cookie = new Cookies();
-            cookie.remove('jwtToken');
+            cookie.remove('EMSToken');
             cleanData(undefined);
             dispatch({ type: "USER", payload: false });
             history('/')
@@ -62,14 +62,16 @@ const Navbar = () => {
                                           Menu
                                     </span>
                                     <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                          <NavLink className="dropdown-item" to='/Profile' >Profile</NavLink>
-                                          <div className="dropdown-divider"></div>
                                           <NavLink className="dropdown-item" to='/History' >History</NavLink>
                                           <div className="dropdown-divider"></div>
                                           <NavLink className="dropdown-item" to='/Mentions'>Mentions</NavLink>
-                                          <div className="dropdown-divider"></div>
-                                          <NavLink className="dropdown-item" to='/Dashboard'>Dashboard</NavLink>
                                     </div>
+                              </li>
+                              <li className="nav-item item active">
+                                    <NavLink className="nav-link" to='/Profile'>Profile</NavLink>
+                              </li>
+                              <li className="nav-item item">
+                                    <NavLink className="nav-link" to='/Dashboard'>Dashboard</NavLink>
                               </li>
                         </>
                   )
@@ -97,12 +99,7 @@ const Navbar = () => {
                               <ul className="navbar-nav mr">
 
                                     <ModifiedMenu />
-                                    <li className="nav-item item active">
-                                          <NavLink className="nav-link" to='/Contact'>Contact us</NavLink>
-                                    </li>
-                                    <li className="nav-item item">
-                                          <NavLink className="nav-link" to='/About'>About us</NavLink>
-                                    </li>
+
                                     <ShowOptions />
                               </ul>
                         </div>
