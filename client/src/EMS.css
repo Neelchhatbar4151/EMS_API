@@ -1,12 +1,12 @@
 @keyframes smooth {
       0% {
-            height: 0px;
+            max-height: 0px;
             opacity: 0;
             background-color: black;
       }
 
       100% {
-            height: 305px;
+            max-height: 320px;
             opacity: 1;
             background-color: white;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -15,13 +15,13 @@
 
 @keyframes remove {
       0% {
-            height: 305px;
+            max-height: 320px;
             opacity: 1;
             background-color: white;
       }
 
       100% {
-            height: 0px;
+            max-height: 0px;
             opacity: 0;
             background-color: black;
       }
@@ -81,7 +81,7 @@
 }
 
 .hr {
-      border-bottom: 1px solid black;
+      border-bottom: 1px solid rgb(155, 155, 155);
       margin-bottom: 40px;
       margin-top: 20px;
 }
@@ -140,3 +140,25 @@
       padding: 15px;
       border-radius: 20px;
 }
+.ull{
+      margin-left: 10%;
+      text-align: left;
+      margin-top: 10px;
+}
+
+.miniload {
+      font-family: arial;
+      font-size: 24px;
+      width: 100%;
+      height: 95vh;
+      /* Center vertically */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .miniloader {
+      width: 120px;
+      height: 120px;
+      animation: logoHighLighter 2s linear infinite;
+    }

@@ -72,7 +72,7 @@ function Mentions() {
 					<td className='fName'>{n.mfrom} </td>
 					<td className='evType'>{n.mType} </td>
 					<td className='mDate'>{day[date.getDay()] + ", " + date.getDate() + " " + month[date.getMonth() + 1] + " " + date.getFullYear()}</td>
-					<td className="mNote">{n.mNote}</td>
+					<td className="mNote">{n.mNote?n.mNote:"No note"}</td>
 				</tr>
 			)
 		}

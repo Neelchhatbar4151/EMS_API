@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../processes/userData';
 import { developement } from '../processes/userData';
 import Moment from 'moment';
+import LoginOrNot from '../processes/loginOrNot';
 
 import MegaInput from './MegaInput';
 
@@ -129,6 +130,7 @@ function Bo() {
 				alert("Select atleast one employee")
 			}
 			else {
+				document.getElementsByClassName('goHome')[0].disabled = true
 				const res = await fetch((developement) ? "http://localhost:5000/BonusToEmployee" : "/BonusToEmployee", {
 					method: "POST",
 					crossDomain: true,
@@ -150,10 +152,14 @@ function Bo() {
 				}
 				else if (data.status === 201) {
 					alert("Successfull !")
+					LoginOrNot().then(() =>{
+						history('.')
+					})
 				}
 				else {
 					alert("unknown error");
 				}
+				document.getElementsByClassName('goHome')[0].disabled = false
 			}
 
 		}

@@ -44,6 +44,7 @@ function Ne() {
 				document.getElementsByClassName("render")[0].style.display = 'none';
 			}
 			else {
+				document.getElementsByClassName('done')[0].disabled = true
 				const res = await fetch((developement) ? "http://localhost:5000/CustomType" : "/CustomType", {
 					method: "POST",
 					crossDomain: true,
@@ -75,8 +76,10 @@ function Ne() {
 				else {
 					alert("unknown error");
 				}
+				document.getElementsByClassName('done')[0].disabled = true
 				setInputValues({ ...inputValues, eType: "Manager" });
 				document.getElementsByClassName("render")[0].style.display = 'none';
+				
 			}
 
 		}
@@ -101,7 +104,14 @@ function Ne() {
 			if (!email || !name || !eType || !date) {
 				alert("Fill the fields properly");
 			}
+			else if (!inputValues.email.includes('@')) {
+				alert("Email field must contain a ' @ '")
+			}
+			else if(phone.length !== 10 ){
+				alert("Phone number must be 10 digit number")
+			}
 			else {
+				document.getElementById('main-submit').disabled = true
 				const res = await fetch((developement) ? "http://localhost:5000/NewEmployee" : '/NewEmployee', {
 					method: "POST",
 					crossDomain: true,
@@ -128,10 +138,14 @@ function Ne() {
 				}
 				else if (data.status === 201) {
 					alert("Employee recorded")
+					LoginOrNot().then(() =>{
+						history('.')
+					})
 				}
 				else {
 					alert("unknown error");
 				}
+				document.getElementById('main-submit').disabled = true
 			}
 		}
 		const d = Moment(inputValues.date).format('yyyy-MM-DD')
@@ -157,7 +171,7 @@ function Ne() {
 							<div className="demoblue">-</div><input placeholder='Employee salary' type="number" name="salary" id="salary" onChange={handleOnChange} value={!inputValues.salary ? "" : inputValues.salary} />
 							<div className="demoblue">-</div><textarea className='TA' placeholder='address of employee' type="textarea" name="note" id="note" onChange={handleOnChange} value={inputValues.note}> </textarea>
 							<br />
-							<button type='submit' className='goHome' onClick={(e) => { e.preventDefault(); NewEmployee() }}>Submit</button>
+							<button type='submit' id='main-submit' className='goHome' onClick={(e) => { e.preventDefault(); NewEmployee() }}>Submit</button>
 						</form>
 					</div>
 				</div>

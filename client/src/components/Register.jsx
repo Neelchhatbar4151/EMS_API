@@ -26,6 +26,7 @@ function Register() {
                   document.getElementsByClassName('danger')[0].innerText = "*Email field must include a ' @ '"
             }
             else {
+                  document.getElementById('do-login').disabled = true
                   const res = await fetch((developement) ? "http://localhost:5000/register" : "/register", {
                         method: "POST",
                         crossDomain: true,
@@ -53,6 +54,7 @@ function Register() {
                   else {
                         alert("Unknown Error");
                   }
+                  document.getElementById('do-login').disabled = true
             }
 
       }

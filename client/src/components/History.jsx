@@ -75,7 +75,7 @@ function History() {
 					<td>{n.rType} </td>
 					<td>{day[date.getDay()] + ", " + date.getDate() + " " + month[date.getMonth()] + " " + date.getFullYear()}</td>
 					<td>{n.rEmployeeType}</td>
-					<td className="noteName">{n.rNote}</td>
+					<td className="noteName">{n.rNote?n.rNote:"No note"}</td>
 				</tr>
 			)
 

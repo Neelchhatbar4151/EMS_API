@@ -11,6 +11,7 @@ import './EMS.css';
 import './history.css';
 import './main.css';
 import './profile.css'
+import './Home.css'
 
 import Navbar from './components/Navbar';
 import Home from './components/Home';
@@ -19,8 +20,6 @@ import Error from './components/Error';
 import Register from './components/Register';
 import Autho from './components/Autho';
 import Mentions from './components/Mentions';
-import Contact from './components/Contact';
-import About from './components/About';
 import Profile from './components/Profile'
 import History from './components/History';
 import Dashboard from './components/Dashboard';
@@ -29,6 +28,8 @@ import Tr from './components/Tr';
 import Sa from './components/Sa';
 import Cu from './components/Cu';
 import Bo from './components/Bo';
+import Forgot from './components/Forgot'
+import Employees from './components/Employees'
 
 export const UserContext = createContext();
 
@@ -46,8 +47,6 @@ function Routing() {
 				<Route exact path='/Authorize' element={<Autho />} />
 				<Route exact path='/' element={<Home />} />
 				<Route exact path='/History' element={<History />} />
-				<Route exact path='/Contact' element={<Contact />} />
-				<Route exact path='/About' element={<About />} />
 				<Route exact path='/Register' element={<Register />} />
 				<Route exact path='/Login' element={<Login />} />
 				<Route exact path='/Profile' element={<Profile />} /> 
@@ -58,6 +57,8 @@ function Routing() {
 				<Route exact path='/Sa' element={<Sa />} />
 				<Route exact path='/Bo' element={<Bo />} />
 				<Route exact path='/Cu' element={<Cu />} />
+				<Route exact path='/Forgot' element={<Forgot />}/>
+				<Route exact path="/Employees" element={<Employees />}/>
 				<Route path='*' element={<Error />} />
 			</Routes>
 		</>

@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom'
 import LoginOrNot from './processes/loginOrNot';
-import IR from './images/realIR.png'
+import IR from './images/logo.png'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

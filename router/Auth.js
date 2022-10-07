@@ -13,7 +13,6 @@ Dotenv.config({ path: './config.env' })
 
 require('../DB/Conn');    //connection to database 
 const User = require('../model/UserSchema');    //importing our collection schema for our users collection
-const { findOne } = require('../model/UserSchema');
 
 App.use(CookieParser());
 
@@ -34,10 +33,37 @@ const sendMail = async (to) => {
       const CODE = Math.floor(100000 + Math.random() * 900000)
       const msg = {
             to: to,
-            from: 'CoinControl21@gmail.com', // Use the email address or domain you verified above
+            from: 'neelchhatbar@gmail.com', // Use the email address or domain you verified above
             subject: 'Verification',
-            text: 'Bring a good habit into your life..',
-            html: `Your coin control CODE: <strong>${CODE}</strong>`,
+            text: 'OTP verification..',
+            html: `Your EMS Login CODE: <strong>${CODE}</strong>`,
+      };
+
+      try {
+            await sgMail.send(msg);
+            await User.findOneAndUpdate({ email: to }, { otp: Number(CODE) }); //Bcrypt.hash(CODE,12)
+
+      } catch (error) {
+            console.log(error)
+      }
+}
+
+const sendForgotCode = async (to) => {
+      const deleteIt = async () => {
+            const res = await User.findOne({ email: to }, { otp: 1 })
+            if (res.otp !== 0) {
+                  User.findOneAndUpdate({ email: to }, { otp: 0 })
+            }
+      }
+
+      setTimeout(deleteIt, 60000);
+      const CODE = Math.floor(100000 + Math.random() * 900000)
+      const msg = {
+            to: to,
+            from: 'neelchhatbar@gmail.com', // Use the email address or domain you verified above
+            subject: 'Verification',
+            text: 'OTP verification..',
+            html: `Your Forgot verification CODE: <strong>${CODE}</strong>`,
       };
 
       try {
@@ -54,7 +80,7 @@ const checkCode = async (req, res, next) => {
       const { email, myCode } = req.body;
 
       const otp = await User.findOne({ email: email }, { otp: 1 })
-      if (Number(otp.otp) != Number(myCode)) {
+      if (Number(otp.otp) !== Number(myCode)) {
             return res.status(406).json({ status: 406 }); //	Not Acceptable
       }
       else {
@@ -66,6 +92,50 @@ const checkCode = async (req, res, next) => {
 
 R.post('/checkCode', checkCode, (req, res) => {
       return res.status(200).json({ status: 200 }); //	ok
+})
+
+const SFC = async (req, res, next) => {
+      try {
+            const { email } = req.body;
+            if (!email) {
+                  return res.status(406).json({ status: 406 })
+            }
+            const data = await User.findOne({email:email})
+            if(!data) {
+                  return res.status(417).json({status:417})
+            }
+            await sendForgotCode(email);
+            next();
+      } catch (error) {
+            console.log(err)
+            return res.status(500).json({ status: 500 })
+      }
+}
+
+R.post('/SendForgotCode', SFC, (req, res) => {
+      return res.status(200).json({ status: 200 });
+})
+
+const CFC = async(req,res,next) =>{
+      try {
+            const {email, otp} = req.body;
+            if(!email || !otp) {
+                  return res.status(406).json({status: 406})
+            }
+            const data = await User.findOne({email},{otp :1})
+            if(Number(data.otp) !== Number(otp)){
+                  return res.status(401).json({status: 401})
+            }
+            await User.findOneAndUpdate({email}, {otp:0})
+            next();
+      } catch (error) {
+            console.log(error)
+            return res.status(500).json({status: 500})
+      }
+}
+
+R.post('/CheckForgotCode', CFC, (req,res) =>{
+      return res.status(200).json({status:200});
 })
 
 R.post('/register', async (req, res) => {
@@ -248,11 +318,12 @@ const IDsalary = async (req, res, next) => {
                   return res.status(406).json({ status: 406 })  //fill the fields properly
             }
 
-            let data = await User.findOne({ _id }, { records: 1 })
+
             const which = (IorD === "I") ? "Increment" : "Decrement";
             const demoIorD = "Salary " + which + " of Employee"
             const demoNote = "Your Salary " + which + " by " + amount + " ₹"
             for (let i = 0; i < emps.length; i++) {
+                  let data = await User.findOne({ _id }, { records: 1 })
                   await User.findOneAndUpdate({ _id, 'employees._id': emps[i]._id }, { '$set': { 'employees.$.eSalary': (IorD === "I") ? (Number(emps[i].eSalary) + Number(amount)) : (Number(emps[i].eSalary) - Number(amount)) } })
                   await User.findOneAndUpdate({ _id, records: data.records.concat({ rType: demoIorD, rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note }) })
                   let d = await User.findOne({ email: emps[i].eEmail }, { mentions: 1 })
@@ -282,8 +353,9 @@ const ET = async (req, res, next) => {
             if (!address || emps.length === 0) {
                   return res.status(406).json({ status: 406 })  //fill the fields properly
             }
-            let data = await User.findOne({ _id }, { records: 1 })
+
             for (let i = 0; i < emps.length; i++) {
+                  let data = await User.findOne({ _id }, { records: 1 })
                   await User.findOneAndUpdate({ _id, 'employees._id': emps[i]._id }, { "$set": { 'employees.$.eNote': address } })
 
                   await User.findOneAndUpdate({ _id }, { records: data.records.concat({ rType: "Transfer of employee", rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note }) })
@@ -314,15 +386,16 @@ const BE = async (req, res, next) => {
             if (!bonusAmount || emps.length === 0) {
                   return res.status(406).json({ status: 406 })  //fill the fields properly
             }
-            let data = await User.findOne({ _id }, { records: 1 })
+
             for (let i = 0; i < emps.length; i++) {
+                  let data = await User.findOne({ _id }, { records: 1 })
                   await User.findOneAndUpdate({ _id }, { records: data.records.concat({ rType: "Bonus to Employee ( +" + bonusAmount + " )", rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note }) })
 
                   let d = await User.findOne({ email: emps[i].eEmail }, { mentions: 1 })
 
                   if (d) {
                         let update = {
-                              mentions: d.mentions.concat({ mfrom: email, mDate: date, mType: "Bonus To Employee", mNote: "You got Bonus of "+bonusAmount+" ₹" })
+                              mentions: d.mentions.concat({ mfrom: email, mDate: date, mType: "Bonus To Employee", mNote: "You got Bonus of " + bonusAmount + " ₹" })
                         }
                         await User.findOneAndUpdate({ email: emps[i].eEmail }, update)
                   }
@@ -338,71 +411,139 @@ R.post('/BonusToEmployee', BE, (req, res) => {
       res.status(201).json({ status: 201 })
 })
 
-const CE = async( req,res,next) =>{
+const CE = async (req, res, next) => {
       try {
             const { email, _id, emps, note, eventType, date } = req.body;
-            if (!eventType || !note){
-                  return res.status(406).json({status: 406})
+            if (!eventType || !note) {
+                  return res.status(406).json({ status: 406 })
             }
-            let data = await User.findOne({_id}, {records: 1})
-            for(let i=0;i<emps.length;i++){
-                  await User.findOneAndUpdate({_id}, {records: data.records.concat({rType: eventType, rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note})})
+            for (let i = 0; i < emps.length; i++) {
+                  let data = await User.findOne({ _id }, { records: 1 })
+                  await User.findOneAndUpdate({ _id }, { records: data.records.concat({ rType: eventType, rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note }) })
 
-                  let d = await User.findOne({email: emps[i].eEmail}, {mentions: 1})
+                  let d = await User.findOne({ email: emps[i].eEmail }, { mentions: 1 })
 
-                  if(d) {
+                  if (d) {
                         let update = {
-                              mentions: d.mentions.concat({mfrom: email, mDate: date, mType: eventType, mNote: note})
+                              mentions: d.mentions.concat({ mfrom: email, mDate: date, mType: eventType, mNote: note })
                         }
-                        await User.findOneAndUpdate({email: emps[i].eEmail}, update)
+                        await User.findOneAndUpdate({ email: emps[i].eEmail }, update)
                   }
             }
+
             next();
-            
+
       } catch (error) {
             console.log(error)
-            res.status(500).json({status: 500})
+            res.status(500).json({ status: 500 })
       }
 }
 
-R.post('/CustomEvent', CE, (req,res) =>{ 
-      res.status(201).json({status: 201})
+R.post('/CustomEvent', CE, (req, res) => {
+      res.status(201).json({ status: 201 })
 })
 
-const CT = async (req,res,next) =>{
+const CT = async (req, res, next) => {
       try {
-            const { _id, eType} = req.body;
-            if(!eType) {
-                  return res.status(406).json({status: 406})
+            const { _id, eType } = req.body;
+            if (!eType) {
+                  return res.status(406).json({ status: 406 })
             }
-            let data = await User.findOne({_id}, {employeeTypes: 1})
-            for(let i=0;i<data.employeeTypes.length;i++){
-                  if(data.employeeTypes[i].eType === eType){
-                        return res.status(400).json({status: 400})
+            let data = await User.findOne({ _id }, { employeeTypes: 1 })
+            for (let i = 0; i < data.employeeTypes.length; i++) {
+                  if (data.employeeTypes[i].eType === eType) {
+                        return res.status(400).json({ status: 400 })
                   }
             }
             let update = {
-                  employeeTypes: data.employeeTypes.concat({eType})
+                  employeeTypes: data.employeeTypes.concat({ eType })
             }
-            await User.findOneAndUpdate({_id}, update)
+            await User.findOneAndUpdate({ _id }, update)
             next();
       } catch (error) {
             console.log(error)
-            res.status( 500).json({status: 500})
+            res.status(500).json({ status: 500 })
       }
 }
 
-R.post('/CustomType', CT, (req,res) =>{ 
-      res.status ( 201).json({status: 201})
+R.post('/CustomType', CT, (req, res) => {
+      res.status(201).json({ status: 201 })
 })
 
-const CUN = async (req,res,next) => {
+const CUN = async (req, res, next) => {
       try {
-            const {_id, name} = req.body;
-            if(!name) {
+            const { _id, name } = req.body;
+            if (!name) {
+                  return res.status(406).json({ status: 406 })
+            }
+            await User.findOneAndUpdate({ _id }, { name })
+            next();
+      } catch (error) {
+            console.log(error)
+            res.status(500).json({ status: 500 })
+      }
+}
+
+R.post('/ChangeUserName', CUN, (req, res) => {
+      res.status(201).json({ status: 201 })
+})
+
+const CP = async (req, res, next) => {
+      try {
+            const { _id, pass, oldPass } = req.body;
+            let data = await User.findOne({ _id }, { password: 1 })
+            const ismatch = await Bcrypt.compare(oldPass, data.password);
+            if (!oldPass || !pass) {
+                  return res.status(406).json({ status: 406 })
+            }
+            if (!ismatch) {
+                  return res.status(401).json({ status: 401 })
+            }
+            const password = await Bcrypt.hash(pass, 12);
+            await User.findOneAndUpdate({ _id }, { password })
+            next();
+
+      } catch (error) {
+            console.log(error)
+            res.status(500).json({ status: 500 })
+      }
+}
+
+R.post('/ChangePassword', CP, (req, res) => {
+      res.status(201).json({ status: 201 })
+})
+
+const CPTF = async(req,res,next) =>{
+      try {
+            const { email, pass } = req.body;
+            if(!pass || !email) {
                   return res.status(406).json({status: 406})
             }
-            await User.findOneAndUpdate({_id}, {name})
+            const password = await Bcrypt.hash(pass, 12);
+            await User.findOneAndUpdate({email}, {password})
+            next();
+
+      } catch (error) {
+            console.log(error)
+            res.status(500).json({status: 500})
+      }
+}
+
+R.post('/ChangePasswordThroughForgot', CPTF, (req,res) =>{
+      res.status(201).json({status: 201})
+})
+
+const DE = async (req,res,next) => {
+      try {
+            const {dId, _id, eEmail, email} = req.body;
+            await User.findOneAndUpdate({ _id }, { $pull: { employees: { _id: dId } } })
+            const data = await User.findOne({email: eEmail}, {mentions: 1})
+            if(data) {
+                  let update = { 
+                        mentions: data.mentions.concat({ mfrom: email, mDate: new Date(), mType: "Removed You", mNote: "You got Removed from their employee list" })
+                  }
+                  await User.findOneAndUpdate({email: eEmail}, update)
+            }
             next();
       } catch (error) {
             console.log(error)
@@ -410,8 +551,30 @@ const CUN = async (req,res,next) => {
       }
 }
 
-R.post('/ChangeUserName', CUN, (req,res) =>{
+R.post('/deleteEmployee', DE, (req,res) => {
       res.status(201).json({status: 201})
+})
+
+const SUM = async (req,res,next) =>{
+      try {
+            const {email, name, msg} = req.body;
+            const Msg = {
+                  to: "fakefake2109@gmail.com",
+                  from: 'neelchhatbar@gmail.com', // Use the email address or domain you verified above
+                  subject: `Message from EMS User ${name}, ${email}`,
+                  text: `Reply to <strong>${email}</strong>`,
+                  html: msg,
+            };
+            await sgMail.send(Msg);
+            next();
+      } catch (error) {
+            console.log(error)
+            res.status(500).json({status: 500})
+      }
+}
+
+R.post('/SendUserMsg', SUM, (req,res) => {
+      res.status(200).json({status: 200})
 })
 
 module.exports = R;  //exporting routes

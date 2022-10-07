@@ -27,7 +27,7 @@
       padding: 10px;
       border-radius: 20px;
       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-      animation: logoHighLighter 2s infinite;
+      /* animation: logoHighLighter 2s infinite; */
 
 }
 
@@ -87,9 +87,9 @@
 }
 
 .button-p{
-      width: 130px;
+      width: 200px;
       /* background-color: rgb(50, 28, 28); */
-      background-color: #277BC0;
+      background-color: #0d4f86;
       margin: 10px;
       border-radius: 3px;
       padding: 7px;
@@ -109,3 +109,6 @@
       border: 2px solid rgb(127, 103, 103);
 }
 
+.edit-p{
+      background-color: #277BC0;
+}

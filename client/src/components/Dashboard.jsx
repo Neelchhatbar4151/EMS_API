@@ -22,7 +22,12 @@ function Dashboard() {
 					<div className="main-card">
 
 						<MegaInput input="--Select an Option--" />
-						{/* <MegaInput input="Transfer of Employee(s)" /> */}
+						<div className="ull">
+							<ul>
+								<li>Select a option to do operations related to employee</li>
+							</ul>
+						</div>
+
 					</div>
 				</div>
 			</>

@@ -1,0 +1,162 @@
+.goodis{
+      background-color: rgba(73,111,144,255);
+      height: 400px;
+      display: block;
+      position: relative;
+}
+.Partlogo{
+      display: block;
+      position: relative;
+      height: 150px;
+      background-color: rgba(249,204,157,255);
+}
+
+.words{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-weight: 900;
+      font-size: 60px;
+      opacity: 1;
+}
+.sariVato1{
+      position: absolute;
+      left: -10%;
+      top: 12%;
+      transform: translate(-50%, -50%);
+      font-weight: 900;
+      font-size: 20px;
+      opacity: 0;
+      color: white;
+      text-align: left;
+
+}
+.sariVato2{
+      position: absolute;
+      left: -10%;
+      top: 24%;
+      transform: translate(-50%, -50%);
+      font-weight: 900;
+      font-size: 20px;
+      opacity: 0;
+      color: white;
+      text-align: left;
+}
+.sariVato3{
+      position: absolute;
+      left: -10%;
+      top: 36%;
+      transform: translate(-50%, -50%);
+      font-weight: 900;
+      font-size: 20px;
+      opacity: 0;
+      color: white;
+      text-align: left
+}
+.bovSariVato{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-weight: 900;
+      font-size: 20px;
+      opacity: 1;
+      color: white;
+      text-align: center;
+      display: none;
+      text-decoration: underline;
+      margin-top: 30px;
+      min-width: 300px;
+}
+@keyframes EMS {
+      0%{
+            opacity: 0;
+            top: 50%;
+      }
+      100%{
+            opacity: 1;
+            top: 43%;
+      }
+}
+
+@keyframes Up {
+      0%{
+            opacity: 0;
+            display: none;
+      }
+      100%{
+            opacity: 1;
+            display: block;
+      }
+}
+.specialwords{
+      position: absolute;
+      left: 50%;
+      top: 70%;
+      transform: translate(-50%, -50%);
+      font-weight: 900;
+      font-size: 15px;
+      opacity: 1;
+      color: black;
+      text-align: center;
+      overflow: auto;
+      display: none;
+      min-width: 300px;
+}
+
+@keyframes slide {
+      0%{
+            opacity: 0;
+            left: -10%;
+      }
+      100%{
+            opacity: 1;
+            left: 50%;
+      }
+}
+
+@keyframes sli {
+      0%{
+            opacity: 0;
+            left: 110%;
+      }
+      100%{
+            opacity: 1;
+            left: 50%;
+      }
+}
+
+@keyframes UpAfter {
+      0%{
+            opacity: 0;
+            top: 78%;
+      }
+      100%{
+            opacity: 1;
+            top: 55%;
+      }
+}
+.contactMain{
+      position: relative;
+      height: 450px;
+      background-color: #71cde1;
+}
+.contactSub{
+      position: absolute;
+      left: 50%;
+      top: 63%;
+      transform: translate(-50%, -50%);
+}
+.words1 {
+      position: absolute;
+      left: 50%;
+      top: 18%;
+      transform: translate(-50%, -50%);
+      font-weight: 600;
+      font-size: 240%;
+      
+}
+.Margin{
+      margin-bottom: 10px;
+}
