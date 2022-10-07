@@ -1,9 +1,5 @@
 import React, { useState } from 'react'
 import { emailParent, setEmail } from '../processes/userData'
-import Cookies from 'universal-cookie';
-import { UserContext } from '../App';
-import LoginOrNot from '../processes/loginOrNot';
-import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { developement } from '../processes/userData';
 import IR from '../images/logo.png'
@@ -11,7 +7,6 @@ import IR from '../images/logo.png'
 
 function Autho() {
 	const [myCode, setMyCode] = useState(0);
-	const { dispatch } = useContext(UserContext)
 	const history = useNavigate();
 	if (emailParent.allow) {
 

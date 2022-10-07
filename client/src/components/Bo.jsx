@@ -15,8 +15,8 @@ function Bo() {
 		if (!state) {
 			history('/Login');
 		}
-	}, [state])
-	const [inputValues, setInputValues] = React.useState({
+	}, [state, history])
+	const [inputValues, setInputValues] = useState({
 		bonusAmount: 0, note: "", date: new Date()
 	});
 

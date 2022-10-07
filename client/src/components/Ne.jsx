@@ -15,8 +15,8 @@ function Ne() {
 		if (!state) {
 			history('/Login');
 		}
-	}, [state])
-	const [inputValues, setInputValues] = React.useState({
+	}, [state, history])
+	const [inputValues, setInputValues] = useState({
 		name: '', email: '', eType: 'Manager', date: new Date(), phone: '', salary: 0, note: ''
 	});
 	const handleOnChange = event => {

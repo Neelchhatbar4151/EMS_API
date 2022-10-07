@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import logo from '../images/logo.png';
 import { UserContext } from '../App';
 import { useLayoutEffect } from 'react';
-import { loginUser, cleanData } from '../processes/userData';
+import { cleanData } from '../processes/userData';
 import Cookies from 'universal-cookie';
 
 

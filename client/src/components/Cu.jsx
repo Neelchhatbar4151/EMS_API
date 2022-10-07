@@ -15,8 +15,8 @@ function Sa() {
 		if (!state) {
 			history('/Login');
 		}
-	}, [state])
-	const [inputValues, setInputValues] = React.useState({
+	}, [state, history])
+	const [inputValues, setInputValues] = useState({
 		note: "", date: new Date(), eventType: ""
 	});
 

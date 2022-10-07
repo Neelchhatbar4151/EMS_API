@@ -71,7 +71,7 @@ function App(Props) {
 	useLayoutEffect(() => {
 		console.log("APP: " + Props.what)
 		dispatch({ type: "USER", payload: Props.what })
-	}, [])
+	}, [Props.what])
 
 	return (
 		<>

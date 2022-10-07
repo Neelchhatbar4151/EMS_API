@@ -14,7 +14,7 @@ function Profile() {
 		if (!state) {
 			Profile('/Login');
 		}
-	}, [state])
+	}, [state, Profile])
 	if (loginUser) {
 		const Render = () => {
 			return (
