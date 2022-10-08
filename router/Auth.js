@@ -589,7 +589,7 @@ const UE = async (req, res, next) => {
 
             if (d) {
                   let update = {
-                        mentions: d.mentions.concat({ mfrom: UserEmail, mDate: date, mType: "New Employee / Edit", mNote: "Edited Your Profile / Hired You" })
+                        mentions: d.mentions.concat({ mfrom: UserEmail, mDate: date, mType: "New Employee / Edit", mNote: "Edited Your Data as a Employee / Hired You" })
                   }
                   await User.findOneAndUpdate({ email: email }, update)
             }
