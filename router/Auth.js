@@ -325,7 +325,7 @@ const IDsalary = async (req, res, next) => {
             for (let i = 0; i < emps.length; i++) {
                   let data = await User.findOne({ _id }, { records: 1 })
                   await User.findOneAndUpdate({ _id, 'employees._id': emps[i]._id }, { '$set': { 'employees.$.eSalary': (IorD === "I") ? (Number(emps[i].eSalary) + Number(amount)) : (Number(emps[i].eSalary) - Number(amount)) } })
-                  await User.findOneAndUpdate({ _id, records: data.records.concat({ rType: demoIorD, rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note }) })
+                  await User.findOneAndUpdate({ _id}, {records: data.records.concat({ rType: demoIorD, rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note }) })
                   let d = await User.findOne({ email: emps[i].eEmail }, { mentions: 1 })
                   if (d) {
                         let update = {

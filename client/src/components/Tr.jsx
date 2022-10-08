@@ -123,7 +123,7 @@ function Tr() {
 		}
 		const TransferEmployee = async () => {
 			if (!inputValues.address) {
-				alert("Enter the changes working address for employee")
+				alert("Enter the changed working address for employee")
 			}
 			else if (selectedEmployees.length === 0) {
 				alert("Select atleast one employee")
@@ -158,7 +158,7 @@ function Tr() {
 				else {
 					alert("unknown error");
 				}
-				document.getElementsByClassName('goHome')[0].disabled = true
+				document.getElementsByClassName('goHome')[0].disabled = false
 			}
 
 		}
