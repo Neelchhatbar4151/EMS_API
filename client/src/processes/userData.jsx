@@ -1,6 +1,6 @@
 export let loginUser ;
 export let emailParent = {email:"demo@gmail.com", password:undefined, allow: false} ; 
-export const developement = false ;
+export const developement = true ;
 
 export const setEmail = (data ) =>{ 
       emailParent = data;

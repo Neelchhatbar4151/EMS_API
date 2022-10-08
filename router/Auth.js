@@ -293,6 +293,15 @@ const recordNewEmployee = async (req, res, next) => {
                         mentions: data.mentions.concat({ mfrom: UserEmail, mDate: date, mType: "New Employee", mNote: ("Hired you as a " + eType) })
                   }
                   await User.findOneAndUpdate(filter, update)
+            }else{
+                  const Msg = {
+                        to: email,
+                        from: 'neelchhatbar@gmail.com', // Use the email address or domain you verified above
+                        subject: 'You missed a Update',
+                        text: 'Someone mentioned you',
+                        html: `<h2 style="text-align: center">Register Your Email on <strong>ems3.herokuapp.com</strong></h2> <h4 style="text-align: center">To not miss any other updates/mentions from now</h4>`,
+                  };
+                  await sgMail.send(Msg)
             }
 
             next();
