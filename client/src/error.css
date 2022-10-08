@@ -36,7 +36,17 @@ p{
 
 }
 
-.goLogin:active, .goHome:active{
+.goLogin:active, .goHome:active, .goCancel:active{
       background-color: rgb(87, 80, 80);
      
+}
+
+.goCancel {
+      padding: 10px;
+      color: white;
+      background-color: rgb(254, 68, 68);
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      margin-left: 5px;
 }

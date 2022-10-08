@@ -17,7 +17,7 @@ function Ne() {
 		}
 	}, [state, history])
 	const [inputValues, setInputValues] = useState({
-		name: '', email: '', eType: 'Manager', date: new Date(), phone: '', salary: 0, note: ''
+		name: '', dept: "", email: '', eType: 'Manager', date: new Date(), phone: '', salary: 0, note: ''
 	});
 	const handleOnChange = event => {
 		const { name, value } = event.target;
@@ -98,10 +98,10 @@ function Ne() {
 
 		const NewEmployee = async () => {
 
-			const { email, name, eType, date, phone, salary, note } = inputValues;
+			const { email, dept, name, eType, date, phone, salary, note } = inputValues;
 			const UserEmail = loginUser.email
 
-			if (!email || !name || !eType || !date) {
+			if (!email || !name || !eType || !date || !dept) {
 				alert("Fill the fields properly");
 			}
 			else if (!inputValues.email.includes('@')) {
@@ -121,7 +121,7 @@ function Ne() {
 						"Access-Control-Allow-Origin": "*",
 					},
 					body: JSON.stringify({
-						email, name, eType, date, phone, salary, note, UserEmail
+						email,dept, name, eType, date, phone, salary, note, UserEmail
 					})
 				})
 
@@ -160,6 +160,7 @@ function Ne() {
 						<form>
 							<div className="demored">*</div> <input type="text" value={inputValues.name} name="name" placeholder='Employee name' onChange={handleOnChange} autoComplete="off" required />
 							<div className="demored">*</div><input type="email" name="email" placeholder='Employee Email ' onChange={handleOnChange} autoComplete="off" required />
+							<div className="demored">*</div><input type="text" name="dept" placeholder='Employee Department ' onChange={handleOnChange} autoComplete="off" required />
 							<div className="demored">*</div>
 							<select name="eType" id="eType" value={inputValues.eType} onChange={handleOnChange}>
 								{loginUser.employeeTypes.map(RenderOptions)}

@@ -162,3 +162,8 @@
       height: 120px;
       animation: logoHighLighter 2s linear infinite;
     }
+
+.or{
+      font-weight: 800;
+      margin-top: -20px;
+}

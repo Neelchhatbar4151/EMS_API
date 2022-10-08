@@ -100,9 +100,9 @@ const SFC = async (req, res, next) => {
             if (!email) {
                   return res.status(406).json({ status: 406 })
             }
-            const data = await User.findOne({email:email})
-            if(!data) {
-                  return res.status(417).json({status:417})
+            const data = await User.findOne({ email: email })
+            if (!data) {
+                  return res.status(417).json({ status: 417 })
             }
             await sendForgotCode(email);
             next();
@@ -116,26 +116,26 @@ R.post('/SendForgotCode', SFC, (req, res) => {
       return res.status(200).json({ status: 200 });
 })
 
-const CFC = async(req,res,next) =>{
+const CFC = async (req, res, next) => {
       try {
-            const {email, otp} = req.body;
-            if(!email || !otp) {
-                  return res.status(406).json({status: 406})
+            const { email, otp } = req.body;
+            if (!email || !otp) {
+                  return res.status(406).json({ status: 406 })
             }
-            const data = await User.findOne({email},{otp :1})
-            if(Number(data.otp) !== Number(otp)){
-                  return res.status(401).json({status: 401})
+            const data = await User.findOne({ email }, { otp: 1 })
+            if (Number(data.otp) !== Number(otp)) {
+                  return res.status(401).json({ status: 401 })
             }
-            await User.findOneAndUpdate({email}, {otp:0})
+            await User.findOneAndUpdate({ email }, { otp: 0 })
             next();
       } catch (error) {
             console.log(error)
-            return res.status(500).json({status: 500})
+            return res.status(500).json({ status: 500 })
       }
 }
 
-R.post('/CheckForgotCode', CFC, (req,res) =>{
-      return res.status(200).json({status:200});
+R.post('/CheckForgotCode', CFC, (req, res) => {
+      return res.status(200).json({ status: 200 });
 })
 
 R.post('/register', async (req, res) => {
@@ -262,9 +262,9 @@ R.post('/getData', authenticate, (req, res) => {
 
 const recordNewEmployee = async (req, res, next) => {
       try {
-            const { email, name, eType, date, phone, salary, note, UserEmail } = req.body;
+            const { email, dept, name, eType, date, phone, salary, note, UserEmail } = req.body;
 
-            if (!email || !name || !eType || !date) {
+            if (!email || !name || !eType || !date || !dept) {
 
                   return res.status(406).json({ status: 406 });  //fill data properly
 
@@ -281,7 +281,7 @@ const recordNewEmployee = async (req, res, next) => {
 
             let update = {
                   records: data.records.concat({ rType: "New Employee", rDate: date, rEmployeeName: name, rEmployeeEmail: email, rEmployeeType: eType, rNote: note }),
-                  employees: data.employees.concat({ eName: name, eType: eType, eDate: date, eEmail: email, ePhone: phone, eSalary: salary, eNote: note })
+                  employees: data.employees.concat({ eName: name, eDept: dept, eType: eType, eDate: date, eEmail: email, ePhone: phone, eSalary: salary, eNote: note })
             }
             await User.findOneAndUpdate(filter, update)
 
@@ -312,20 +312,20 @@ R.post('/NewEmployee', recordNewEmployee, (req, res) => {
 
 const IDsalary = async (req, res, next) => {
       try {
-            const { _id, email, amount, note, emps, IorD, date } = req.body
+            const { _id, email, amount, note, emps, IorD, date, unit } = req.body
 
             if (!amount || emps.length === 0) {
                   return res.status(406).json({ status: 406 })  //fill the fields properly
             }
 
-
             const which = (IorD === "I") ? "Increment" : "Decrement";
             const demoIorD = "Salary " + which + " of Employee"
-            const demoNote = "Your Salary " + which + " by " + amount + " ₹"
             for (let i = 0; i < emps.length; i++) {
                   let data = await User.findOne({ _id }, { records: 1 })
-                  await User.findOneAndUpdate({ _id, 'employees._id': emps[i]._id }, { '$set': { 'employees.$.eSalary': (IorD === "I") ? (Number(emps[i].eSalary) + Number(amount)) : (Number(emps[i].eSalary) - Number(amount)) } })
-                  await User.findOneAndUpdate({ _id}, {records: data.records.concat({ rType: demoIorD, rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note }) })
+                  let realAmount = (unit === 'N') ? amount : (amount * emps[i].eSalary) / 100
+                  const demoNote = "Your Salary " + which + "ed by " + realAmount + " ₹"
+                  await User.findOneAndUpdate({ _id, 'employees._id': emps[i]._id }, { '$set': { 'employees.$.eSalary': (IorD === "I") ? (Number(emps[i].eSalary) + Number(realAmount)) : (Number(emps[i].eSalary) - Number(realAmount)) } })
+                  await User.findOneAndUpdate({ _id }, { records: data.records.concat({ rType: demoIorD, rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: note }) })
                   let d = await User.findOne({ email: emps[i].eEmail }, { mentions: 1 })
                   if (d) {
                         let update = {
@@ -446,7 +446,7 @@ R.post('/CustomEvent', CE, (req, res) => {
 const CT = async (req, res, next) => {
       try {
             const { _id, eType } = req.body;
-            console.log(_id,eType)
+            console.log(_id, eType)
             if (!eType) {
                   return res.status(406).json({ status: 406 })
             }
@@ -514,51 +514,51 @@ R.post('/ChangePassword', CP, (req, res) => {
       res.status(201).json({ status: 201 })
 })
 
-const CPTF = async(req,res,next) =>{
+const CPTF = async (req, res, next) => {
       try {
             const { email, pass } = req.body;
-            if(!pass || !email) {
-                  return res.status(406).json({status: 406})
+            if (!pass || !email) {
+                  return res.status(406).json({ status: 406 })
             }
             const password = await Bcrypt.hash(pass, 12);
-            await User.findOneAndUpdate({email}, {password})
+            await User.findOneAndUpdate({ email }, { password })
             next();
 
       } catch (error) {
             console.log(error)
-            res.status(500).json({status: 500})
+            res.status(500).json({ status: 500 })
       }
 }
 
-R.post('/ChangePasswordThroughForgot', CPTF, (req,res) =>{
-      res.status(201).json({status: 201})
+R.post('/ChangePasswordThroughForgot', CPTF, (req, res) => {
+      res.status(201).json({ status: 201 })
 })
 
-const DE = async (req,res,next) => {
+const DE = async (req, res, next) => {
       try {
-            const {dId, _id, eEmail, email} = req.body;
+            const { dId, _id, eEmail, email } = req.body;
             await User.findOneAndUpdate({ _id }, { $pull: { employees: { _id: dId } } })
-            const data = await User.findOne({email: eEmail}, {mentions: 1})
-            if(data) {
-                  let update = { 
+            const data = await User.findOne({ email: eEmail }, { mentions: 1 })
+            if (data) {
+                  let update = {
                         mentions: data.mentions.concat({ mfrom: email, mDate: new Date(), mType: "Removed You", mNote: "You got Removed from their employee list" })
                   }
-                  await User.findOneAndUpdate({email: eEmail}, update)
+                  await User.findOneAndUpdate({ email: eEmail }, update)
             }
             next();
       } catch (error) {
             console.log(error)
-            res.status(500).json({status: 500})
+            res.status(500).json({ status: 500 })
       }
 }
 
-R.post('/deleteEmployee', DE, (req,res) => {
-      res.status(201).json({status: 201})
+R.post('/deleteEmployee', DE, (req, res) => {
+      res.status(201).json({ status: 201 })
 })
 
-const SUM = async (req,res,next) =>{
+const SUM = async (req, res, next) => {
       try {
-            const {email, name, msg} = req.body;
+            const { email, name, msg } = req.body;
             const Msg = {
                   to: "fakefake2109@gmail.com",
                   from: 'neelchhatbar@gmail.com', // Use the email address or domain you verified above
@@ -570,12 +570,38 @@ const SUM = async (req,res,next) =>{
             next();
       } catch (error) {
             console.log(error)
-            res.status(500).json({status: 500})
+            res.status(500).json({ status: 500 })
       }
 }
 
-R.post('/SendUserMsg', SUM, (req,res) => {
-      res.status(200).json({status: 200})
+R.post('/SendUserMsg', SUM, (req, res) => {
+      res.status(200).json({ status: 200 })
+})
+
+const UE = async (req, res, next) => {
+      try {
+            const { EmailNow, email, note, date, eType, dept, phone, salary, name, UserEmail } = req.body;
+            if (!email || !date || !eType || !dept || !name) {
+                  return res.status(406).json({ status: 406 })
+            }
+            await User.findOneAndUpdate({ email: UserEmail, 'employees.eEmail': EmailNow }, { '$set': { 'employees.$.eEmail': email, 'employees.$.eType': eType, 'employees.$.eDate': date, 'employees.$.eDept': dept, 'employees.$.eName': name, 'employees.$.eNote': note, 'employees.$.ePhone': phone, 'employees.$.eSalary': salary } })
+            let d = await User.findOne({ email: email }, { mentions: 1 })
+
+            if (d) {
+                  let update = {
+                        mentions: d.mentions.concat({ mfrom: UserEmail, mDate: date, mType: "New Employee / Edit", mNote: "Edited Your Profile / Hired You" })
+                  }
+                  await User.findOneAndUpdate({ email: email }, update)
+            }
+            next()
+      } catch (error) {
+            console.log(error)
+            res.status(500).json({ status: 500 })
+      }
+}
+
+R.post('/UpdateEmployee', UE, (req, res) => {
+      res.status(200).json({ status: 200 })
 })
 
 module.exports = R;  //exporting routes

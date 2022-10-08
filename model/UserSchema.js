@@ -64,6 +64,9 @@ const UserSchema = new Mongoose.Schema({
                         type: String
 
                   },
+                  eDept: {
+                        type: String
+                  },
                   eType: {
 
                         type: String

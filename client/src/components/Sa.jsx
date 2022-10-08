@@ -17,7 +17,7 @@ function Sa() {
 		}
 	}, [state, history])
 	const [inputValues, setInputValues] = useState({
-		salaryID: 0, IorD: "I", note: "", date: new Date()
+		salaryID: 0, IorD: "I", note: "", date: new Date(), salaryInPercent: 0
 	});
 
 	const handleOnChange = event => {
@@ -122,14 +122,25 @@ function Sa() {
 			}
 		}
 		const salaryIorD = async () => {
-			if (inputValues.salaryID <= 0) {
-				alert("Salary Increment/decrement value must be higher than 0")
+			if (inputValues.salaryID && inputValues.salaryInPercent) {
+				const words = "Don't Fill both Amount and Percent for salary "+((inputValues.IorD === 'I') ? "Increment" : "Decrement")
+				alert(words);
 			}
 			else if (selectedEmployees.length === 0) {
 				alert("Select atleast one employee")
 			}
+			else if ((!inputValues.salaryID && !inputValues.salaryInPercent ) || !inputValues.date) {
+				alert("Fill the fields properly")
+			}
 			else {
 				document.getElementsByClassName('goHome')[0].disabled = true
+				let unit;
+				if(inputValues.salaryID){
+					unit = 'N'
+				}
+				else{
+					unit = 'P'
+				}
 				const res = await fetch((developement) ? "http://localhost:5000/salaryIorD" : "/salaryIorD", {
 					method: "POST",
 					crossDomain: true,
@@ -139,7 +150,7 @@ function Sa() {
 						"Access-Control-Allow-Origin": "*",
 					},
 					body: JSON.stringify({
-						amount: inputValues.salaryID, email: loginUser.email, _id: loginUser._id, note: inputValues.note, emps: selectedEmployees, IorD: inputValues.IorD, date: inputValues.date
+						amount: (inputValues.salaryID) ? inputValues.salaryID : inputValues.salaryInPercent, email: loginUser.email, _id: loginUser._id, note: inputValues.note, emps: selectedEmployees, IorD: inputValues.IorD, date: inputValues.date, unit
 					})
 				})
 				const data = await res.json();
@@ -162,6 +173,16 @@ function Sa() {
 			}
 
 		}
+		if(inputValues.salaryInPercent > 100){
+			setInputValues({...inputValues, salaryInPercent: 100})
+		}
+		else if(inputValues.salaryInPercent < 0 || inputValues.salaryInPercent === -1)
+		{
+			setInputValues({...inputValues, salaryInPercent: 0})
+		}
+		if(inputValues.salaryID < 0){
+			setInputValues({...inputValues, salaryID: 0})
+		}
 		const d = Moment(inputValues.date).format('yyyy-MM-DD')
 		return (
 			<>
@@ -178,7 +199,8 @@ function Sa() {
 								<option value="D">Decrement</option>
 							</select>
 							<input placeholder='hiring date' type="date" name="date" id="eDate" onChange={handleOnChange} value={d} autoComplete='off' required />
-							<div className="demored">*</div><input type="number" name="salaryID" value={(inputValues.salaryID) ? inputValues.salaryID : ""} onChange={handleOnChange} placeholder={"Amount of salary " + ((inputValues.IorD === "D") ? "Decrement" : "Increment")} />
+							<div className="demored">*</div><input type="number" name="salaryID" value={(inputValues.salaryID) ? inputValues.salaryID : ""} onChange={handleOnChange} placeholder={"Amount of salary " + ((inputValues.IorD === "D") ? "Decrement" : "Increment")} /> <div className="or">Or</div>
+							<input type="number" name="salaryInPercent" value={(inputValues.salaryInPercent) ? inputValues.salaryInPercent : ""} onChange={handleOnChange} placeholder={"Percent of salary " + ((inputValues.IorD === 'D') ? "Decrement" : "Increment")} />
 							<div className="demoblue">-</div><textarea className='pta TA' placeholder={'NOTE: Any information or note related to Salary ' + ((inputValues.IorD === "D") ? "Decrement" : "Increment")} type="textarea" name="note" id="note" onChange={handleOnChange} value={inputValues.note}> </textarea>
 							<div className="demored">*</div><input className='SE goLogin' id="emps" type="button" value="Select Employees" onClick={(e) => { e.preventDefault(); Interface(); }} />
 							<br /> <button type="submit" className='goHome' onClick={(e) => { e.preventDefault(); salaryIorD() }}>Submit</button>
