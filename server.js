@@ -3,21 +3,16 @@ const Express = require('express');
 const App = Express();
 const Cors = require('cors');
 const path = require("path");
-
 Dotenv.config({path: './config.env'})
-require('./DB/Conn')
-
 App.use(Cors());
 
 App.use(Express.json())
 
-App.use(require('./router/Auth'))
+App.use(require("./router/Auth"))
 
 const PORT = process.env.PORT || 5000;
 
 App.use(Express.static(path.join(__dirname, "./client/build")));
-
-
 
 App.get("*", (req, res) => {
 

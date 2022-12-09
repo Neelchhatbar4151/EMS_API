@@ -5,7 +5,6 @@ const R = Express.Router();
 const App = Express();
 const Bcrypt = require('bcrypt');
 const CookieParser = require('cookie-parser');
-const cron = require('node-cron');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -225,7 +224,6 @@ R.post('/signin', async (req, res) => {
 const authenticate = async (req, res, next) => {
 
       try {
-
             const token = req.body.token;
 
             if (!token) {
@@ -255,7 +253,6 @@ const authenticate = async (req, res, next) => {
 }
 
 R.post('/getData', authenticate, (req, res) => {
-
       res.status(200).json({ status: 200, data: req.rootUser }); //ok, Token and User found
 
 })

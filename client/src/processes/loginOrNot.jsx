@@ -5,7 +5,6 @@ import { developement } from './userData';
 const LoginOrNot = async () => {
       
       const cookie = new Cookies();
-
       const optionsForFetching = {
 
             method: "POST",
@@ -31,7 +30,7 @@ const LoginOrNot = async () => {
 
             const data = await res.json();
 
-            if( data.status != 200 ){
+            if( data.status !== 200 ){
                   throw new Error(res.error);
             }
             

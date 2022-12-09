@@ -66,10 +66,10 @@ function Home() {
 				})
 			})
 			const data = await res.json();
-			if(data.status === 200){
+			if (data.status === 200) {
 				alert("Sent !!")
 			}
-			else{
+			else {
 				alert("Internal server error")
 			}
 			document.getElementsByClassName('goLogin')[0].disabled = false;
@@ -106,10 +106,7 @@ function Home() {
 						<input type="button" className='goLogin' value="SEND" onClick={Interface} />
 					</form>
 				</div>
-
 			</div>
-
-
 		</>
 	)
 }
