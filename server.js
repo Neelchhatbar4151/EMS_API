@@ -12,12 +12,14 @@ App.use(require("./router/Auth"))
 
 const PORT = process.env.PORT || 5000;
 
-App.use(Express.static(path.join(__dirname, "./client/build")));
+// App.use(Express.static(path.join(__dirname, "./client/build")));
 
-App.get("*", (req, res) => {
+// App.get("*", (req, res) => {
 
-    res.sendFile(path.join(__dirname, "./client/build/index.html"), function(err){res.status(500).send(err);});
+//     res.sendFile(path.join(__dirname, "./client/build/index.html"), function(err){res.status(500).send(err);});
 
-})
+// })
 
 App.listen(PORT);
+
+// "client": "npm start --prefix client",
