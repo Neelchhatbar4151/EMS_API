@@ -10,7 +10,6 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 Dotenv.config({ path: './config.env' })
 
-require('../DB/Conn');    //connection to database 
 const User = require('../model/UserSchema');    //importing our collection schema for our users collection
 
 App.use(CookieParser());
@@ -225,7 +224,7 @@ const authenticate = async (req, res, next) => {
 
       try {
             const token = req.body.token;
-
+            // console.log(token);
             if (!token) {
 
                   throw new Error;  //Token not found
