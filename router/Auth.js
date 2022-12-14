@@ -16,13 +16,10 @@ App.use(CookieParser());
 
 const sendMail = async (to) => {
       const deleteIt = async () => {
-<<<<<<< HEAD
-            System.out.println("Delete It...");
-=======
-            console.log("Delete it..")
->>>>>>> e82b6bd (msg)
+            console.log("Checking for authorization.. ")
             const res = await User.findOne({ email: to }, { otp: 1 })
             if (res.otp !== 0) {
+                  console.log("Deleting it..")
                   User.findOneAndDelete({ email: to }, function (err) {
                         if (err) {
                               console.log(err)
