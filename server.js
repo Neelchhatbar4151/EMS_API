@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const path = require("path");
 const fs = require('fs');
 const https = require('https');
+const multer = require('multer')
+const AWS = require('aws-sdk')
 Dotenv.config({ path: './config.env' })
 App.use(Cors());
 
@@ -38,25 +40,15 @@ App.get("/.well-known/pki-validation/A1113D57B8C69E1E3A7D40479FDE003A.txt", (req
 })
 App.use(require("./router/Auth"))
 
-const PORT = process.env.PORT || 5000;
+const upload = multer({dest:'uploads/'});
 
-connectDB().then(() => {
-    // App.listen(PORT, () => {
-    //     console.log("listening for requests");
-    // })
-    https.createServer(cred, App)
-        .listen(5000, function (req, res) {
-            console.log("Server started at port 5000");
-        });
-    // App.use(Express.static(path.join(__dirname, "./client/build")));
-
-    // App.get("*", (req, res) => {
-
-    //     res.sendFile(path.join(__dirname, "./client/build/index.html"), function (err) { res.status(500).send(err); });
-
-    // })
+App.post('/images', upload.single('ProfilePic'), (req,res) => {
+    res.send("Hii");
 })
 
-// App.listen(PORT);
-
-// "client": "npm start --prefix client",
+connectDB().then(() => {
+    https.createServer(cred, App)
+        .listen(443, function (req, res) {
+            console.log("Server started at port 443");
+        });
+})

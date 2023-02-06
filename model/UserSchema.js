@@ -167,6 +167,14 @@ const UserSchema = new Mongoose.Schema({
             }
 
       ],
+
+      // Filename: String,
+      // desc: String,
+      // img:
+      // {
+      //       data: Buffer,
+      //       contentType: String
+      // }
        
 });
 
