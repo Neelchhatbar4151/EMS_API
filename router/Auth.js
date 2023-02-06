@@ -8,6 +8,8 @@ const CookieParser = require('cookie-parser');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+//made by neel
+
 Dotenv.config({ path: './config.env' })
 
 const User = require('../model/UserSchema');    //importing our collection schema for our users collection
