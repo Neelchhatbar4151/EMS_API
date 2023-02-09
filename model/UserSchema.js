@@ -21,6 +21,41 @@ const UserSchema = new Mongoose.Schema({
 
       },
 
+      phoneNumber: {
+            type: Number,
+            default: null
+      },
+
+      address:{
+            type: String,
+            default: ""
+      },
+
+      workAt:{
+            type: String,
+            default: ""
+      },
+
+      userType: {
+            type: String,
+            default: "Employee"
+      },
+
+      userStatus: {
+            type: String, 
+            default: "Busy"
+      },
+
+      country: {
+            type: String,
+            default: ""
+      },
+
+      profession:{
+            type:String,
+            default: ""
+      },
+
       email: {
 
             type: String,

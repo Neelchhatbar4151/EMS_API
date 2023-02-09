@@ -7,7 +7,6 @@ const path = require("path");
 const fs = require('fs');
 const https = require('https');
 const s3 = require('./router/s3');
-const multer = require('multer')
 Dotenv.config({ path: './config.env' })
 App.use(Cors());
 
@@ -37,11 +36,13 @@ const connectDB = async () => {
 }
 
 
+const multer = require('multer')
 const upload = multer({ dest: 'uploads/' });
 
-App.post('/images', upload.single('ProfilePic'), async (req, res) => {
+App.post('/images', upload.single('file'), async (req, res) => {
       const file = req.file;
-      const resp = await s3.putObject(file);
+      console.log(req)
+      const resp = await s3.putObject(file, "neelchhatbar@gmail.com");
       fs.unlink('uploads/' + file.filename, (err) => {
             if (err) {
                   console.log(err)

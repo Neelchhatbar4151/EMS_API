@@ -13,6 +13,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 Dotenv.config({ path: './config.env' })
 
 const User = require('../model/UserSchema');    //importing our collection schema for our users collection
+const { findOne } = require('../model/UserSchema');
 
 App.use(CookieParser());
 
@@ -292,7 +293,7 @@ const recordNewEmployee = async (req, res, next) => {
                         mentions: data.mentions.concat({ mfrom: UserEmail, mDate: date, mType: "New Employee", mNote: ("Hired you as a " + eType) })
                   }
                   await User.findOneAndUpdate(filter, update)
-            }else{
+            } else {
                   const Msg = {
                         to: email,
                         from: 'neelchhatbar@gmail.com', // Use the email address or domain you verified above
@@ -508,6 +509,9 @@ const CP = async (req, res, next) => {
             if (!ismatch) {
                   return res.status(401).json({ status: 401 })
             }
+            if (pass === oldPass) {
+                  return res.status(409).json({ status: 409 });
+            }
             const password = await Bcrypt.hash(pass, 12);
             await User.findOneAndUpdate({ _id }, { password })
             next();
@@ -527,6 +531,11 @@ const CPTF = async (req, res, next) => {
             const { email, pass } = req.body;
             if (!pass || !email) {
                   return res.status(406).json({ status: 406 })
+            }
+            const data = await User.findOne({ email }, 'password')
+            const ismatch = await Bcrypt.compare(pass, data.password);
+            if (ismatch) {
+                  return res.status(409).json({ status: 409 })
             }
             const password = await Bcrypt.hash(pass, 12);
             await User.findOneAndUpdate({ email }, { password })
@@ -592,16 +601,24 @@ const UE = async (req, res, next) => {
             if (!email || !date || !eType || !dept || !name) {
                   return res.status(406).json({ status: 406 })
             }
-            await User.findOneAndUpdate({ email: UserEmail, 'employees.eEmail': EmailNow }, { '$set': { 'employees.$.eEmail': email, 'employees.$.eType': eType, 'employees.$.eDate': date, 'employees.$.eDept': dept, 'employees.$.eName': name, 'employees.$.eNote': note, 'employees.$.ePhone': phone, 'employees.$.eSalary': salary } })
-            let d = await User.findOne({ email: email }, { mentions: 1 })
-
-            if (d) {
-                  let update = {
-                        mentions: d.mentions.concat({ mfrom: UserEmail, mDate: date, mType: "New Employee / Edit", mNote: "Edited Your Data as a Employee / Hired You" })
-                  }
-                  await User.findOneAndUpdate({ email: email }, update)
+            let d = await User.findOne({ email: UserEmail, 'employees.eEmail': email })
+            // console.log(d)
+            if (d && EmailNow !== email) {
+                  return res.status(409).json({ status: 409 });
             }
-            next()
+            else {
+                  await User.findOneAndUpdate({ email: UserEmail, 'employees.eEmail': EmailNow }, { '$set': { 'employees.$.eEmail': email, 'employees.$.eType': eType, 'employees.$.eDate': date, 'employees.$.eDept': dept, 'employees.$.eName': name, 'employees.$.eNote': note, 'employees.$.ePhone': phone, 'employees.$.eSalary': salary } })
+                  d = await User.findOne({ email: email }, { mentions: 1 })
+
+                  if (d) {
+                        let update = {
+                              mentions: d.mentions.concat({ mfrom: UserEmail, mDate: date, mType: "New Employee / Edit", mNote: "Edited Your Data as a Employee / Hired You" })
+                        }
+                        await User.findOneAndUpdate({ email: email }, update)
+                  }
+                  next()
+            }
+
       } catch (error) {
             console.log(error)
             res.status(500).json({ status: 500 })
@@ -610,6 +627,78 @@ const UE = async (req, res, next) => {
 
 R.post('/UpdateEmployee', UE, (req, res) => {
       res.status(200).json({ status: 200 })
+})
+
+const s3 = require('./s3')
+const fs = require('fs')
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' });
+
+R.post('/EditProfile', upload.single('image'), async (req, res) => {
+      try {
+            const file = req.file;
+            if (file) {
+                  await s3.putObject(file, req.body.email);
+                  fs.unlink('./uploads/' + file.filename, (err) => {
+                        if (err) {
+                              console.log(err)
+                        }
+                  })
+            }
+            const { name, phoneNumber, address, workAt, profession, userType, userStatus, country } = req.body;
+            await User.findOneAndUpdate({ email: req.body.email }, { name, phoneNumber, address, workAt, profession, userType, userStatus, country })
+            return res.status(200).json({ status: 200 })
+      } catch (error) {
+            console.log(error)
+            return res.status(500).json({ status: 500 })
+      }
+})
+
+R.post('/GetProfilePic', async (req, res) => {
+      try {
+            const signedUrl = await s3.GetObject(req.body.email)
+            res.json({ URL: signedUrl, status: 200 })
+      } catch (error) {
+            if (error.name === 'NotFound') { // Note with v3 AWS-SDK use error.code
+                  res.status(404).json({ status: 404 })
+            } else {
+                  res.status(500).json({ status: 500 })
+            }
+      }
+})
+
+R.post('/GetProfiles', async (req, res) => {
+      try {
+            const data = await User.find({}).select('name email phoneNumber address workAt userType userStatus country profession employees');
+            let sendData = [];
+            const NOE = req.body.nameOrEmail;
+            const C = req.body.country;
+            const T = req.body.userType;
+            await (async () => {
+                  for (let i = 0; i < data.length; i++) {
+                        if (NOE) {
+                              if (NOE !== data[i].name.toUpperCase() || NOE !== data[i].email.toUpperCase()) {
+                                    continue;
+                              }
+                        }
+                        if (C) {
+                              if (C !== data[i].country) {
+                                    continue;
+                              }
+                        }
+                        if (T) {
+                              if (T !== data[i].userType && data[i].userType !== "RE") {
+                                    continue;
+                              }
+                        }
+                        sendData.push(data[i])
+                  }
+            })()
+            res.status(200).json({ status: 200, data: sendData })
+      }
+      catch (error) {
+            req.status(500).json({ status: 500 })
+      }
 })
 
 module.exports = R;  //exporting routes

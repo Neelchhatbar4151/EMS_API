@@ -15,13 +15,13 @@ const s3 = new S3({
       }
 })
 
-exports.putObject = async (file) => {
+exports.putObject = async (file, email) => {
       try {
             const fileStream = fs.readFileSync(file.path);
             const uploadParams = {
                   Bucket: "ems-code",
                   Body: fileStream,
-                  Key: file.filename,
+                  Key: email,
                   ContentType: file.mimetype
             }
             return s3.send(new PutObjectCommand(uploadParams));
@@ -36,19 +36,30 @@ exports.deleteFile = (fileName) => {
             Key: fileName,
       }
 
-      return s3Client.send(new DeleteObjectCommand(deleteParams));
+      return s3.send(new DeleteObjectCommand(deleteParams));
 }
 exports.GetObject = async (key) => {
-      const params = {
-            Bucket: 'ems-code',
-            Key: key
+      try {
+            const params = {
+                  Bucket: 'ems-code',
+                  Key: key
+            }
+            await s3.headObject(params);
+            const command = new GetObjectCommand(params);
+            const seconds = 10
+            const url = await getSignedUrl(s3, command, { expiresIn: seconds });
+
+            return url
       }
-
-      const command = new GetObjectCommand(params);
-      const seconds = 60
-      const url = await getSignedUrl(s3, command, { expiresIn: seconds });
-
-      return url
+      catch (err) {
+            if(err.name === 'NotFound'){
+                  return 404;
+            }
+            else {
+                  console.log(err)
+                  return 500;
+            }
+      }
 }
 
 
