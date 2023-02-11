@@ -14,6 +14,11 @@ const UserSchema = new Mongoose.Schema({
             default:0
       },
 
+      hasProfilePic: {
+            type: Boolean,
+            default: false
+      },
+
       name: {
 
             type: String,
@@ -131,6 +136,12 @@ const UserSchema = new Mongoose.Schema({
 
                         type: String
 
+                  },
+                  totalPaid: {
+                        
+                        type: Number,
+                        default: 0
+
                   }
 
             }
@@ -202,6 +213,27 @@ const UserSchema = new Mongoose.Schema({
             }
 
       ],
+
+      attendance: [
+            {
+                  attendanceDate:{
+                        type: Date
+                  },
+                  attendanceData:[
+                        {
+                              eName: {
+                                    type: String
+                              },
+                              eEmail: {
+                                    type: String
+                              },
+                              checked: {
+                                    type: String
+                              }
+                        }
+                  ]
+            }
+      ]
 
       // Filename: String,
       // desc: String,

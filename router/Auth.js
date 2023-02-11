@@ -290,7 +290,7 @@ const recordNewEmployee = async (req, res, next) => {
             data = await User.findOne(filter, { mentions: 1 })
             if (data) {
                   update = {
-                        mentions: data.mentions.concat({ mfrom: UserEmail, mDate: date, mType: "New Employee", mNote: ("Hired you as a " + eType) })
+                        mentions: data.mentions.concat({ mfrom: UserEmail, mDate: date, mType: "New Employee", mNote: ("Hired you as a " + eType + " With Salary " + salary + "₹") })
                   }
                   await User.findOneAndUpdate(filter, update)
             } else {
@@ -455,7 +455,6 @@ R.post('/CustomEvent', CE, (req, res) => {
 const CT = async (req, res, next) => {
       try {
             const { _id, eType } = req.body;
-            console.log(_id, eType)
             if (!eType) {
                   return res.status(406).json({ status: 406 })
             }
@@ -478,6 +477,96 @@ const CT = async (req, res, next) => {
 
 R.post('/CustomType', CT, (req, res) => {
       res.status(201).json({ status: 201 })
+})
+
+R.post('/Leave', async (req, res) => {
+      try {
+            const { leaveType, note, date, selectedEmployees, email } = req.body;
+            for (let i = 0; i < selectedEmployees.length; i++) {
+                  let data = await User.findOne({ email }, { records: 1 })
+                  await User.findOneAndUpdate({ email }, { records: data.records.concat({ rType: leaveType + " Leave", rDate: date, rEmployeeName: selectedEmployees[i].eName, rEmployeeEmail: selectedEmployees[i].eEmail, rEmployeeType: selectedEmployees[i].eType, rNote: note }) })
+                  let d = await User.findOne({ email: selectedEmployees[i].eEmail }, { mentions: 1 })
+                  if (leaveType === "Without Pay") {
+                        let date = new Date()
+                        let charge = 0;
+                        if (date.getMonth() === 0 ||
+                              date.getMonth() === 2 ||
+                              date.getMonth() === 4 ||
+                              date.getMonth() === 6 ||
+                              date.getMonth() === 7 ||
+                              date.getMonth() === 9 ||
+                              date.getMonth() === 11) {
+                              charge = selectedEmployees[i].eSalary / 31
+                        }
+                        else if (date.getMonth() === 1) {
+                              if (date.getFullYear % 4 === 0) {
+                                    charge = selectedEmployees[i].eSalary / 28
+                              }
+                              else {
+                                    charge = selectedEmployees[i].eSalary / 29
+                              }
+                        }
+                        else {
+                              charge = selectedEmployees[i].eSalary / 30
+                        }
+                        charge = Math.round(charge)
+                        console.log(charge)
+                        await User.findOneAndUpdate({ email, 'employees._id': selectedEmployees[i]._id }, { "$set": { 'employees.$.eSalary': Math.round(selectedEmployees[i].eSalary) - charge } })
+                        if (d) {
+                              let update = {
+                                    mentions: d.mentions.concat({ mfrom: email, mDate: date, mType: leaveType + " Leave, Deducted " + charge + " From your Salary", mNote: note })
+                              }
+                              await User.findOneAndUpdate({ email: selectedEmployees[i].eEmail }, update)
+                        }
+                  }
+                  else if (leaveType === "Half Pay") {
+                        let date = new Date()
+                        let charge = 0;
+                        if (date.getMonth() === 0 ||
+                              date.getMonth() === 2 ||
+                              date.getMonth() === 4 ||
+                              date.getMonth() === 6 ||
+                              date.getMonth() === 7 ||
+                              date.getMonth() === 9 ||
+                              date.getMonth() === 11) {
+                              charge = selectedEmployees[i].eSalary / 31
+                        }
+                        else if (date.getMonth() === 1) {
+                              if (date.getFullYear % 4 === 0) {
+                                    charge = selectedEmployees[i].eSalary / 28
+                              }
+                              else {
+                                    charge = selectedEmployees[i].eSalary / 29
+                              }
+                        }
+                        else {
+                              charge = selectedEmployees[i].eSalary / 30
+                        }
+                        charge = Math.round(charge / 2)
+                        await User.findOneAndUpdate({ email, 'employees._id': selectedEmployees[i]._id }, { "$set": { 'employees.$.eSalary': Math.round(selectedEmployees[i].eSalary) - charge } })
+                        if (d) {
+                              let update = {
+                                    mentions: d.mentions.concat({ mfrom: email, mDate: date, mType: leaveType + " Leave, Deducted " + charge + " From your Salary", mNote: note })
+                              }
+                              await User.findOneAndUpdate({ email: selectedEmployees[i].eEmail }, update)
+                        }
+                  }
+                  else {
+                        if (d) {
+                              let update = {
+                                    mentions: d.mentions.concat({ mfrom: email, mDate: date, mType: leaveType + " Leave", mNote: note })
+                              }
+                              await User.findOneAndUpdate({ email: selectedEmployees[i].eEmail }, update)
+                        }
+                  }
+
+            }
+            res.status(201).json({ status: 201 })
+      }
+      catch (err) {
+            console.log(err)
+            res.status(500).json({ status: 500 })
+      }
 })
 
 const CUN = async (req, res, next) => {
@@ -638,6 +727,7 @@ R.post('/EditProfile', upload.single('image'), async (req, res) => {
       try {
             const file = req.file;
             if (file) {
+                  await User.findOneAndUpdate({ email: req.body.email }, { hasProfilePic: true })
                   await s3.putObject(file, req.body.email);
                   fs.unlink('./uploads/' + file.filename, (err) => {
                         if (err) {
@@ -646,6 +736,7 @@ R.post('/EditProfile', upload.single('image'), async (req, res) => {
                   })
             }
             const { name, phoneNumber, address, workAt, profession, userType, userStatus, country } = req.body;
+            console.log(userStatus)
             await User.findOneAndUpdate({ email: req.body.email }, { name, phoneNumber, address, workAt, profession, userType, userStatus, country })
             return res.status(200).json({ status: 200 })
       } catch (error) {
@@ -656,6 +747,10 @@ R.post('/EditProfile', upload.single('image'), async (req, res) => {
 
 R.post('/GetProfilePic', async (req, res) => {
       try {
+            const data = await User.findOne({ email: req.body.email }, { hasProfilePic: 1 })
+            if (data.hasProfilePic === false) {
+                  return res.status(404).json({ status: 404 })
+            }
             const signedUrl = await s3.GetObject(req.body.email)
             res.json({ URL: signedUrl, status: 200 })
       } catch (error) {
@@ -676,18 +771,21 @@ R.post('/GetProfiles', async (req, res) => {
             const T = req.body.userType;
             await (async () => {
                   for (let i = 0; i < data.length; i++) {
+                        if (req.body.email === data[i].email.toUpperCase()) {
+                              continue;
+                        }
                         if (NOE) {
                               if (NOE !== data[i].name.toUpperCase() || NOE !== data[i].email.toUpperCase()) {
                                     continue;
                               }
                         }
                         if (C) {
-                              if (C !== data[i].country) {
+                              if (C !== data[i].country.toUpperCase()) {
                                     continue;
                               }
                         }
                         if (T) {
-                              if (T !== data[i].userType && data[i].userType !== "RE") {
+                              if (T !== data[i].userType.toUpperCase() && data[i].userType.toUpperCase() !== "RE") {
                                     continue;
                               }
                         }
@@ -700,5 +798,97 @@ R.post('/GetProfiles', async (req, res) => {
             req.status(500).json({ status: 500 })
       }
 })
+
+R.post('/TodayAttendance', async (req, res) => {
+      try {
+            const data = req.body.data;
+            let generatedData = [];
+            let x = await User.findOne({ email: req.body.email }, { attendance: 1 })
+            for (let i = 0; i < data.length; i++) {
+                  generatedData.push({ eName: data[i].data.eName, eEmail: data[i].data.eEmail, checked: (data[i].checked) ? true : false })
+            }
+            x.attendance.push({ attendanceDate: new Date(), attendanceData: generatedData })
+            await User.findOneAndUpdate({ email: req.body.email }, { attendance: x.attendance })
+            res.status(200).json({ status: 200 })
+      }
+      catch (err) {
+            console.log(err)
+            res.status(500).json({ status: 500 });
+      }
+})
+
+R.post("/CheckForAttendance", async (req, res) => {
+      try {
+            const data = await User.findOne({ email: req.body.email }, { attendance: 1 })
+            if (data.attendance.length === 0) {
+                  console.log("HIU")
+                  return res.status(200).json({ status: 200 })
+            }
+            let date = new Date(data.attendance[data.attendance.length - 1].attendanceDate);
+            date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            let dummy = new Date();
+            let today = new Date(dummy.getFullYear(), dummy.getMonth(), dummy.getDate())
+            console.log(date + " K " + today)
+            if (today > date) {
+                  return res.status(200).json({ status: 200 })
+            }
+            res.status(500).json({ status: 500 })
+      }
+      catch (err) {
+            res.status(500).json({ status: 500 })
+      }
+})
+
+R.post('/GetUserData', async (req, res) => {
+      try {
+            const data = await User.findOne({ email: req.body.email }, { name: 1, phoneNumber: 1, address: 1, workAt: 1, userType: 1, userStatus: 1, country: 1, profession: 1, email: 1, password: 1 })
+            return res.status(200).json({ status: 200, data })
+      }
+      catch (err) {
+            console.log(err)
+            res.status(500).json({ status: 500 })
+      }
+})
+
+R.post('/PaySalary', async (req, res) => {
+      try {
+            const { email, emps, date } = req.body;
+            for (let i = 0; i < emps.length; i++) {
+                  let data = await User.findOne({ email }, { records: 1, employees: 1 })
+                  for (let j = 0; j < data.employees.length; j++) {
+                        if (data.employees[j].eEmail === emps[i].eEmail) {
+                              await User.findOneAndUpdate({ email, 'employees.eEmail': emps[i].eEmail }, { '$set': { 'employees.$.totalPaid': data.employees[j].totalPaid + data.employees[j].eSalary } })
+                        }
+                  }
+
+                  await User.findOneAndUpdate({ email }, { records: data.records.concat({ rType: "Salary Payment", rDate: date, rEmployeeName: emps[i].eName, rEmployeeEmail: emps[i].eEmail, rEmployeeType: emps[i].eType, rNote: "Salary Paid " + emps[i].eSalary }) })
+
+                  let d = await User.findOne({ email: emps[i].eEmail }, { mentions: 1 })
+
+                  if (d) {
+                        let update = {
+                              mentions: d.mentions.concat({ mfrom: email, mDate: date, mType: "Salary Payment", mNote: "Salary Paid " + emps[i].eSalary })
+                        }
+                        await User.findOneAndUpdate({ email: emps[i].eEmail }, update)
+                  }
+            }
+            res.status(201).json({ status: 201 })
+      }
+      catch (err) {
+            console.log(err)
+            res.status(500).json({ status: 500 })
+      }
+})
+
+// R.post('/GetAttendanceHistory', async (req, res) => {
+//       try{
+//             const data = await User.findOne({email: req.body.email}, {attendance: 1})
+//             return res.status(200).json({status:200, data: data.attendance})
+//       }
+//       catch(err){
+//             console.log(err)
+//             res.status(500).json({status: 500})
+//       }
+// })
 
 module.exports = R;  //exporting routes
