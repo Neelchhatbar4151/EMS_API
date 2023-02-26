@@ -20,6 +20,8 @@ const cred = {
       cert
 }
 
+const PORT = process.env.PORT || 5000;
+
 const DB = process.env.DATABASE;
 
 const connectDB = async () => {
@@ -46,5 +48,5 @@ connectDB().then(() => {
 //               .listen(443, function (req, res) {
 //                   console.log("Server started at port 443");
 //               });
-      App.listen(5000)
+      App.listen(PORT)
 })
