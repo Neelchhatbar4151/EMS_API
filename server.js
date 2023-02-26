@@ -42,9 +42,9 @@ App.get("/.well-known/pki-validation/A1113D57B8C69E1E3A7D40479FDE003A.txt", (req
 App.use(require("./router/Auth"))
 
 connectDB().then(() => {
-          https.createServer(cred, App)
-              .listen(443, function (req, res) {
-                  console.log("Server started at port 443");
-              });
-      // App.listen(5000)
+//           https.createServer(cred, App)
+//               .listen(443, function (req, res) {
+//                   console.log("Server started at port 443");
+//               });
+      App.listen(5000)
 })
